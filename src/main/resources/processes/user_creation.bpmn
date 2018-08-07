@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.omg.org/bpmn20" id="_1Q8zAJj2EeiJAcLgHIx8Aw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd" exporter="jBPM Designer" exporterVersion="1.0">
+  <process id="UserCreation" name="UserCreation" isExecutable="true" xmlns:drools="http://www.jboss.org/drools" drools:packageName="com.myspace.meals" drools:version="1.0">
+    <startEvent id="_B2B0F58B-59F8-4F70-842E-EBB6874A0DBE"></startEvent>
+    <sequenceFlow id="_B4F9EEB2-B371-4686-BAC9-FCD717A9CB2C" sourceRef="_B2B0F58B-59F8-4F70-842E-EBB6874A0DBE" targetRef="identifyUserByAuthorization"></sequenceFlow>
+    <serviceTask id="identifyUserByAuthorization" name="Identifica usuário pela autorização" activiti:expression="${httpDelegate.execute(execution, &quot;http://localhost:8080/users&quot;, &quot;GET&quot;, &quot;{\&quot;Authorization\&quot;:&quot;.concat(&quot;\&quot;&quot;).concat(execution.getVariable(&quot;authorization&quot;)).concat(&quot;\&quot;}&quot;))}" activiti:resultVariableName="response">
+      <extensionElements>
+        <activiti:field name="responseJolt">
+          <activiti:string><![CDATA[[ { "operation": "shift", "spec": { "status": { "404": { "#false": "exists" }, "200": { "#true": "exists" } } } } ]]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="exclusivegateway1" targetRef="terminateendevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${httpDelegate.jsonPathResults(response, "$.[?(@.exists ==\"false\")]" ) == 1}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="terminateendevent1" name="End">
+      <terminateEventDefinition></terminateEventDefinition>
+    </endEvent>
+    <serviceTask id="servicetask1" name="Cria usuário" activiti:expression="${httpDelegate.execute(execution, &quot;http://localhost:8080/users&quot;, &quot;GET&quot;, &quot;{\&quot;Authorization\&quot;:&quot;.concat(&quot;\&quot;&quot;).concat(execution.getVariable(&quot;authorization&quot;)).concat(&quot;\&quot;}&quot;))}" activiti:resultVariableName="response">
+      <extensionElements>
+        <activiti:field name="responseJolt">
+          <activiti:string><![CDATA[[ { "operation": "shift", "spec": { "status": { "404": { "#not_exists": "client" }, "200": { "#exists": "client" } } } } ]]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow4" sourceRef="exclusivegateway1" targetRef="servicetask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${httpDelegate.jsonPathResults(response, "$.[?(@.exists ==\"true\")]" ) == 1}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="identifyUserByAuthorization" targetRef="exclusivegateway1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_UserCreation">
+    <bpmndi:BPMNPlane bpmnElement="UserCreation" id="BPMNPlane_UserCreation">
+      <bpmndi:BPMNShape bpmnElement="_B2B0F58B-59F8-4F70-842E-EBB6874A0DBE" id="BPMNShape__B2B0F58B-59F8-4F70-842E-EBB6874A0DBE">
+        <omgdc:Bounds height="35.0" width="35.0" x="30.0" y="71.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="identifyUserByAuthorization" id="BPMNShape_identifyUserByAuthorization">
+        <omgdc:Bounds height="80.0" width="100.0" x="107.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="252.0" y="66.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="terminateendevent1" id="BPMNShape_terminateendevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="350.0" y="67.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="220.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_B4F9EEB2-B371-4686-BAC9-FCD717A9CB2C" id="BPMNEdge__B4F9EEB2-B371-4686-BAC9-FCD717A9CB2C">
+        <omgdi:waypoint x="65.0" y="88.0"></omgdi:waypoint>
+        <omgdi:waypoint x="107.0" y="85.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="292.0" y="86.0"></omgdi:waypoint>
+        <omgdi:waypoint x="350.0" y="84.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="272.0" y="106.0"></omgdi:waypoint>
+        <omgdi:waypoint x="272.0" y="160.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="207.0" y="85.0"></omgdi:waypoint>
+        <omgdi:waypoint x="252.0" y="86.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
