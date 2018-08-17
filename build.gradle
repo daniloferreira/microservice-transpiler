@@ -1,12 +1,6 @@
 buildscript {
-	ext {
-		springBootVersion = '1.5.15.RELEASE'
-	}
 	repositories {
 		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 	}
 }
 
@@ -14,9 +8,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'groovy'
-apply plugin: 'org.springframework.boot'
 
-group = 'com.example'
+group = 'microservice-transpiler'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
@@ -26,20 +19,13 @@ repositories {
 
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-hateoas')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile group: 'org.activiti', name: 'activiti-spring-boot-starter-basic', version: '6.0.0'
-	compile 'org.activiti:activiti-spring-boot-starter-rest-api:6.0.0'
-	runtime('com.h2database:h2')
 	compile group: 'com.bazaarvoice.jolt', name: 'jolt-core', version: '0.1.1'
 	compile group: 'com.bazaarvoice.jolt', name: 'json-utils', version: '0.1.1'
 	compile 'com.jayway.jsonpath:json-path:2.3.0'
-
-
-
+	compile 'org.apache.httpcomponents:httpclient:4.1.1'
 
 	testCompile("org.codehaus.groovy:groovy-all:2.4.5")
 	testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
-	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4'
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '2.18.0'
+
 }
